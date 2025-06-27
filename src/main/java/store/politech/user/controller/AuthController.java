@@ -13,7 +13,7 @@ import store.politech.dto.LoginDTO;
 import store.politech.user.service.UserService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private UserService userService;

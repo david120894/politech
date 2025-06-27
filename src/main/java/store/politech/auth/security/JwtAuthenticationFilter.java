@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import store.politech.user.service.impl.UserDetailsServiceImpl;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -26,21 +27,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    private static final List<String> EXCLUDED_PATHS = List.of(
+            "/auth/login"
+    );
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+
+        if (isExcluded(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = getJwtFromRequest(request);
         if (StringUtils.hasText(token) && jwtGenerator.validateToken(token)) {
-
             String username = jwtGenerator.getUsernameFromJWT(token);
-
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-                    userDetails.getAuthorities());
+
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
+
         filterChain.doFilter(request, response);
     }
 
@@ -50,5 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private boolean isExcluded(String path) {
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 }

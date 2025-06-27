@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/person")
+@RequestMapping("/person")
 public class PersonController {
     @Autowired
     private PersonService personService;
@@ -25,6 +25,7 @@ public class PersonController {
                 personService.getPersonAll()
         ));
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PersonDTO>> getPersonById(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
@@ -33,6 +34,7 @@ public class PersonController {
                 personService.getPersonById(id)
         ));
     }
+
     @PostMapping
     public ResponseEntity<ApiResponse<PersonDTO>> createPerson(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(new ApiResponse<>(
@@ -52,8 +54,7 @@ public class PersonController {
     }
 
     @PutMapping("/upload/img/{id}")
-    public ResponseEntity<ApiResponse<String>> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file)
-    {
+    public ResponseEntity<ApiResponse<String>> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
             return ResponseEntity.ok(new ApiResponse<>(
                     "Image uploaded successfully",

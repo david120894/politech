@@ -54,14 +54,27 @@ public class SecurityConfig {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
                     corsConfig.setAllowedOrigins(List.of("http://localhost:4200"));
                     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfig.setAllowedHeaders(List.of("*"));
+                    corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
                     corsConfig.setAllowCredentials(true);
                     return corsConfig;
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/login", "/images/**","/v3/api-docs").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/images/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**",
+                                "/swagger-resources/**",
+                                "/swagger-resources/configuration/ui",
+                                "/swagger-resources/configuration/security"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
+
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e
