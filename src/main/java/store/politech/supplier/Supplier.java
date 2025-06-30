@@ -19,9 +19,13 @@ public class Supplier {
     private String email;
     private String phone;
     private String address;
+    private String website;
+    private String contactPerson;
+    private String ruc;
+    private String bankAccountNumber;
+    private String description;
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> products = new HashSet<>();
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Purchase> purchases = new HashSet<>();
-    // Additional fields and methods can be added as needed
 }
