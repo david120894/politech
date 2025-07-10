@@ -49,7 +49,7 @@ public class ProductController {
                 )
         );
     }
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponseDTO>> updateProduct(@PathVariable Long id, @RequestBody ProductResponseDTO productResponseDTO) {
         return ResponseEntity.ok(
                 new ApiResponse<>(
