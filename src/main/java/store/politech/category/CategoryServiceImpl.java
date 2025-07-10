@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService{
     public static Category setCategory(CategoryBodyDto categoryBodyDto) {
         Category category = new Category();
         category.setName(categoryBodyDto.getName());
-        category.setDescription(category.getDescription());
+        category.setDescription(categoryBodyDto.getDescription());
         return category;
     }
 }
