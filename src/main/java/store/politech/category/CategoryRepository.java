@@ -1,9 +1,10 @@
-package store.politech.supplier;
+package store.politech.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.yaml.snakeyaml.events.Event;
 
 @Repository
-public interface SupplierRepository extends JpaRepository<Supplier, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
     Boolean existsByName(String name);
 }

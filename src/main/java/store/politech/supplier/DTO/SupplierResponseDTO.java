@@ -6,7 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class SupplierResponseDTO {
-    private String id;
+    private Long id;
     private String name;
     private String email;
     private String phone;
