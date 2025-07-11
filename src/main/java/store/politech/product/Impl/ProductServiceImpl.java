@@ -2,11 +2,14 @@ package store.politech.product.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import store.politech.auth.exceptions.NotFoundException;
+import store.politech.category.Category;
 import store.politech.category.CategoryRepository;
 import store.politech.product.DTO.ProductResponseDTO;
 import store.politech.product.Product;
 import store.politech.product.ProductRepository;
 import store.politech.product.ProductService;
+import store.politech.supplier.Supplier;
 import store.politech.supplier.SupplierRepository;
 
 import java.util.List;
@@ -15,7 +18,9 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
     private SupplierRepository supplierRepository;
 
     @Override
@@ -51,9 +56,9 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsByName((productResponseDTO.getName()))) {
             throw new RuntimeException("Product with name already exists");
         }
-        var category = categoryRepository.findById(productResponseDTO.getCategoryId())
+        Category category = categoryRepository.findById(productResponseDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + productResponseDTO.getCategoryId()));
-        var supplier = supplierRepository.findById(productResponseDTO.getSupplierId())
+        Supplier supplier = supplierRepository.findById(productResponseDTO.getSupplierId())
                 .orElseThrow(() -> new RuntimeException("Supplier not found with id: " + productResponseDTO.getSupplierId()));
         Product product = new Product();
         product.setName(productResponseDTO.getName());
@@ -61,7 +66,6 @@ public class ProductServiceImpl implements ProductService {
         product.setPrice(productResponseDTO.getPrice());
         product.setStock(productResponseDTO.getStock());
         product.setCategory(category);
-        ;
         product.setSupplier(supplier);
         Product product1 = productRepository.save(product);
         return new ProductResponseDTO(
@@ -77,7 +81,31 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductResponseDTO productResponseDTO) {
-        return null;
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));
+        if (productRepository.existsByNameAndIdNot(productResponseDTO.getName(), id)) {
+            throw new RuntimeException("Product with name already exists");
+        }
+        Category category = categoryRepository.findById(productResponseDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + productResponseDTO.getCategoryId()));
+        Supplier supplier = supplierRepository.findById(productResponseDTO.getSupplierId())
+                .orElseThrow(() -> new RuntimeException("Supplier not found with id: " + productResponseDTO.getSupplierId()));
+        product.setName(productResponseDTO.getName());
+        product.setDescription(productResponseDTO.getDescription());
+        product.setPrice(productResponseDTO.getPrice());
+        product.setStock(productResponseDTO.getStock());
+        product.setCategory(category.getId() != null ? category : product.getCategory());
+        product.setSupplier(supplier.getId() != null ? supplier : product.getSupplier());
+        productRepository.save(product);
+        return new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getStock(),
+                product.getCategory().getId(),
+                product.getSupplier().getId()
+        );
     }
 
     @Override
